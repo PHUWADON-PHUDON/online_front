@@ -24,3 +24,21 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+canvas{
+  width: 100dvw;
+  height: 100dvh;
+}
+
+.anipreload{
+  animation: anipreload 1s infinite linear forwards;
+}
+
+@keyframes anipreload {
+  0%{
+    transform: rotate(0deg);
+  }
+  100%{
+    transform: rotate(360deg);
+  }
+}
