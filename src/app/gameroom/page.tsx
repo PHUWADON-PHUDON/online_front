@@ -46,8 +46,8 @@ export default function Gameroom() {
             socket.emit("useronline", dataplayer.id);
 
             socket.emit("findmatch", dataplayer.id);
-            socket.on("findmatch", (findmatch) => {
-              ///
+            socket.on("findmatch", (foundmatch) => {
+              console.log(foundmatch);
             });
         }
 
