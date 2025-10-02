@@ -1,7 +1,9 @@
 "use client";
 import { useState,useEffect } from "react";
+import { io } from "socket.io-client";
 import axios from "axios";
-import Preload from "./Preload";
+import Preload from "../components/Preload";
+const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL);
 
 interface Typedatauser {
     id:number;
@@ -10,7 +12,7 @@ interface Typedatauser {
     score:number;
 }
 
-export default function Header() {
+export default function Gameroom() {
     const [dataplayer,setdataplayer] = useState<Typedatauser>() ;
     const [wait,setwait] = useState<boolean>(true);
     const url = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -37,18 +39,31 @@ export default function Header() {
 
     //!
 
+    //!socket api client
+
+    useEffect(() => {
+        if (dataplayer) {
+            socket.emit("useronline", dataplayer.id);
+
+            socket.emit("findmatch", dataplayer.id);
+            socket.on("findmatch", (findmatch) => {
+              ///
+            });
+        }
+
+        return () => {
+          socket.off("useronline");
+          socket.off("findmatch");
+        };
+    },[dataplayer]);
+
+    //!
+
     return(
-        <div>
-            <div className="flex items-center justify-between">
-                <p className="text-[25px] font-bold bg-linear-to-l/decreasing from-indigo-500 to-teal-400 bg-clip-text text-transparent">X O Online</p>
-                <div className="h-[40px] flex justify-center items-center gap-[20px]">
-                    <p className="font-bold bg-linear-to-r/decreasing from-indigo-500 to-teal-400 bg-clip-text text-transparent">{dataplayer?.name}</p>
-                    {wait ? 
-                        <Preload/>
-                        :
-                        <p className="font-bold text-[#6bf46b]">{dataplayer?.score}</p>
-                    }
-                </div>
+        <div className="h-full flex justify-center items-center">
+            <div>
+                <p className="text-[30px] font-bold">FIND MATCH</p>
+                <Preload/>
             </div>
         </div>
     );

@@ -111,8 +111,11 @@ export default function Formlogin({isclickregister,setisclickregister}:Typeclick
 						const res = await axios.post(url + "/user/googlelogin",{name:session.user?.name,email:session.user?.email},{withCredentials:true});
 						if (res.status === 201) {
 							localStorage.setItem("checklogin",JSON.stringify(false));
-							router.push("/game");
+							window.location.href = "/game";
 						}
+					}
+					else if (status === "unauthenticated") {
+						setiswait(false);
 					}
 				}
 				else {

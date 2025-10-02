@@ -2,19 +2,22 @@
 import { useState,useEffect } from "react";
 import { io } from "socket.io-client";
 import axios from "axios";
-import Cookies from "js-cookie";
 import Header from "../components/Header";
+import Preload from "../components/Preload";
 const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL);
 
 interface Typedatauser {
+    id:number;
     name:string;
     email:string;
     score:number;
 }
 
 export default function Game() {
+    const [dataplayer,setdataplayer] = useState<Typedatauser>() ;
     const [datauser,setdatauser] = useState<Typedatauser[]>([]);
-    const [dataplayer,setdataplayer] = useState<Typedatauser>();
+    const [onlineuser,setonlineuser] = useState<number>(0);
+    const [wait,setwait] = useState<boolean>(true);
     const url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
     //!get data player
@@ -22,9 +25,11 @@ export default function Game() {
     useEffect(() => {
         const getDataPlayer = async () => {
             try{
+                setwait(true);
                 const res = await axios.get(url + "/user/verifyuser",{withCredentials:true});
                 if (res.status === 200) {
                     setdataplayer(res.data);
+                    setwait(false);
                 }
             }
             catch(err) {
@@ -44,9 +49,11 @@ export default function Game() {
 
         const getDataUser = async () => {
             try{
+                setwait(true);
                 const res = await axios.get(url + "/user/getdatauser",{signal:abortcontroller.signal});
                 if (res.status === 200) {
-                    setdatauser(res.data)
+                    setdatauser(res.data);
+                    setwait(false);
                 }
             }
             catch(err) {}
@@ -60,18 +67,29 @@ export default function Game() {
     //!
 
     //!socket api client
-    
+        
     useEffect(() => {
-        socket.emit("useronline", "");
-        socket.on("useronline", (online) => {
-          console.log(online);
-        });
+        if (dataplayer) {
+            socket.emit("useronline", dataplayer.id);
+            socket.on("useronline", (online) => {
+              setonlineuser(online.users.length);
+            });
+
+            socket.on("findmatch", (findmatch) => {
+              ///
+            });
+        }
 
         return () => {
           socket.off("useronline");
+          socket.off("findmatch");
         };
-    },[]);
+    },[dataplayer]);
 
+    const play = () => {
+        window.location.href = "/gameroom";
+    }
+    
     //!
 
     return(
@@ -86,17 +104,21 @@ export default function Game() {
                         <p>NAME</p>
                         <p>SCORE</p>
                     </div>
-                    {datauser.map((e,i) => (
-                        <div key={i} className="text-center grid grid-cols-[50px_1fr_1fr] mt-[10px] text-[#ffffff9e]">
-                            <p>{i + 1}</p>
-                            <p className="text-center">{e.name}</p>
-                            <p className="text-center">{e.score}</p>
-                        </div>
-                    ))}
+                    {wait ? 
+                        <Preload/>
+                        :
+                        (datauser.map((e,i) => (
+                            <div key={i} className="text-center grid grid-cols-[50px_1fr_1fr] mt-[10px] text-[#ffffff9e]">
+                                <p>{i + 1}</p>
+                                <p className="text-center">{e.name}</p>
+                                <p className="text-center">{e.score}</p>
+                            </div>
+                        )))
+                    }
                 </div>
                 <div className="w-[40%]">
-                    <div className="bg-[#1b1b1b] rounded-[4px] h-[80px] text-center flex justify-center items-center text-[25px] font-bold">Online 100</div>
-                    <div className="bg-[#0bd049bb] mt-[10px] rounded-[4px] text-center text-[20px] p-[25px_0] font-bold">PLAY</div>
+                    <div className="bg-[#1b1b1b] rounded-[4px] h-[80px] text-center flex justify-center items-center text-[25px] font-bold">Online {onlineuser}</div>
+                    <div onClick={() => play()} className="bg-[#0bd049bb] mt-[10px] rounded-[4px] text-center text-[20px] p-[25px_0] font-bold cursor-pointer">PLAY</div>
                 </div>
             </div>
         </div>
