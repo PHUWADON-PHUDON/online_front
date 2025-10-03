@@ -1,5 +1,5 @@
 "use client";
-import { useState,useEffect } from "react";
+import { useState,useEffect,useRef } from "react";
 import { io } from "socket.io-client";
 import axios from "axios";
 import Preload from "../components/Preload";
@@ -15,6 +15,8 @@ interface Typedatauser {
 export default function Gameroom() {
     const [dataplayer,setdataplayer] = useState<Typedatauser>() ;
     const [wait,setwait] = useState<boolean>(true);
+    const [isfoundmatch,setisfoundmatch] = useState<boolean>(false);
+    const playerref = useRef<any>(null);
     const url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
     //!get data player
@@ -47,7 +49,8 @@ export default function Gameroom() {
 
             socket.emit("findmatch", dataplayer.id);
             socket.on("findmatch", (foundmatch) => {
-              console.log(foundmatch);
+                playerref.current = foundmatch;
+                setisfoundmatch(true);
             });
         }
 
@@ -61,10 +64,18 @@ export default function Gameroom() {
 
     return(
         <div className="h-full flex justify-center items-center">
-            <div>
-                <p className="text-[30px] font-bold">FIND MATCH</p>
-                <Preload/>
-            </div>
+            {isfoundmatch ? 
+                <div>
+                    <p>{playerref.current.player1} VS {playerref.current.player2}</p>
+                </div>
+                :
+                <div>
+                    <p className="text-[30px] font-bold">FIND MATCH</p>
+                    <Preload/>
+                </div>
+            }
         </div>
     );
 }
+
+//?first quiue = first player
