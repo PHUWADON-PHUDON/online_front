@@ -16,8 +16,11 @@ export default function Gameroom() {
     const [dataplayer,setdataplayer] = useState<Typedatauser>() ;
     const [wait,setwait] = useState<boolean>(true);
     const [isfoundmatch,setisfoundmatch] = useState<boolean>(false);
+    const [isplay,setisplay] = useState<boolean>(false);
     const playerref = useRef<any>(null);
+    const symbol = useRef<string>("");
     const url = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const table = ["","","","","","","","",""];
 
     //!get data player
     
@@ -47,18 +50,52 @@ export default function Gameroom() {
         if (dataplayer) {
             socket.emit("useronline", dataplayer.id);
 
-            socket.emit("findmatch", dataplayer.id);
+            socket.emit("findmatch", {username:dataplayer.name,userid:dataplayer.id});
             socket.on("findmatch", (foundmatch) => {
                 playerref.current = foundmatch;
+
+                if (foundmatch.player1.userid == dataplayer.id) {
+                    setisplay(true);
+                    symbol.current = "x_white.svg";
+                }
+                else {
+                    symbol.current = "o_white.svg";
+                }
+
                 setisfoundmatch(true);
+            });
+
+            socket.emit("outofgame", "");
+            socket.on("outofgame", (outofgame) => {
+                console.log(outofgame);
             });
         }
 
         return () => {
           socket.off("useronline");
           socket.off("findmatch");
+          socket.off("outofgame");
         };
     },[dataplayer]);
+
+    //!
+
+    //!click x or o
+
+    const click = (element:any,index:number) => {
+        if (isplay) {
+            const createimg = document.createElement("img");
+
+            createimg.src = symbol.current;
+            createimg.style.width = "120px";
+
+            element.appendChild(createimg);
+
+            setisplay(false);
+
+            socket.emit("switchplayer",{userid:dataplayer?.id,player1:playerref.current.player1.userid,player2:playerref.current.player2.userid,index:index,symbol:symbol.current,canclick:true});
+        }
+    }
 
     //!
 
@@ -66,7 +103,12 @@ export default function Gameroom() {
         <div className="h-full flex justify-center items-center">
             {isfoundmatch ? 
                 <div>
-                    <p>{playerref.current.player1} VS {playerref.current.player2}</p>
+                    <p className="text-center">{playerref.current.player1.username} VS {playerref.current.player2.username}</p>
+                    <div className="border border-white grid grid-cols-3 grid-rows-3">
+                        {table.map((e,i) => (
+                            <div key={i} onClick={(e) => click(e.target,i)} className="border border-white w-[150px] h-[150px] flex justify-center items-center"></div>
+                        ))}
+                    </div>
                 </div>
                 :
                 <div>

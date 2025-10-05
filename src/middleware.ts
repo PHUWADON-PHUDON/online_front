@@ -18,4 +18,4 @@ export async function middleware(req:NextRequest) {
     }
 }
 
-export const config = { matcher: ['/game'] }
+export const config = { matcher: ["/game","/gameroom"] }
