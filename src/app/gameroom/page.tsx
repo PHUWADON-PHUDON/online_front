@@ -65,9 +65,13 @@ export default function Gameroom() {
                 setisfoundmatch(true);
             });
 
-            socket.emit("outofgame", "");
             socket.on("outofgame", (outofgame) => {
-                console.log(outofgame);
+                if (outofgame) {
+                    if (outofgame.player1 === dataplayer.id || outofgame.player2 === dataplayer.id) {
+                        alert("Player Leave the Game.");
+                        window.location.href = "/game";
+                    }
+                }
             });
         }
 
