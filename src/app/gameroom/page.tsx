@@ -19,6 +19,7 @@ export default function Gameroom() {
     const [isplay,setisplay] = useState<boolean>(false);
     const playerref = useRef<any>(null);
     const symbol = useRef<string>("");
+    const tableref = useRef<any>([]);
     const url = process.env.NEXT_PUBLIC_BACKEND_URL;
     const table = ["","","","","","","","",""];
 
@@ -73,12 +74,32 @@ export default function Gameroom() {
                     }
                 }
             });
+
+             socket.on("switchplayer", (switchdata) => {
+                if (switchdata) {
+                    if (dataplayer.id === switchdata.player1 ||dataplayer.id === switchdata.player2) {
+                        console.log(switchdata)
+
+                        if (dataplayer.id !== switchdata.userid) {
+                            const createimg = document.createElement("img");
+
+                            createimg.src = switchdata.symbol;
+                            createimg.style.width = "120px";
+
+                            tableref.current[switchdata.index].appendChild(createimg);
+
+                            setisplay(switchdata.canclick);
+                        }
+                    }
+                }
+             });
         }
 
         return () => {
           socket.off("useronline");
           socket.off("findmatch");
           socket.off("outofgame");
+          socket.off("switchplayer");
         };
     },[dataplayer]);
 
@@ -110,7 +131,7 @@ export default function Gameroom() {
                     <p className="text-center">{playerref.current.player1.username} VS {playerref.current.player2.username}</p>
                     <div className="border border-white grid grid-cols-3 grid-rows-3">
                         {table.map((e,i) => (
-                            <div key={i} onClick={(e) => click(e.target,i)} className="border border-white w-[150px] h-[150px] flex justify-center items-center"></div>
+                            <div key={i} onClick={(e) => click(e.target,i)} ref={(e:any) => tableref.current[i] = e} className="border border-white w-[150px] h-[150px] flex justify-center items-center"></div>
                         ))}
                     </div>
                 </div>
@@ -124,4 +145,4 @@ export default function Gameroom() {
     );
 }
 
-//?first quiue = first player
+//?first queue = first player
