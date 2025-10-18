@@ -20,6 +20,7 @@ export default function Gameroom() {
     const playerref = useRef<any>(null);
     const symbol = useRef<string>("");
     const tableref = useRef<any>([]);
+    const getindexclick = useRef<number[]>([]);
     const url = process.env.NEXT_PUBLIC_BACKEND_URL;
     const table = ["","","","","","","","",""];
 
@@ -78,10 +79,10 @@ export default function Gameroom() {
              socket.on("switchplayer", (switchdata) => {
                 if (switchdata) {
                     if (dataplayer.id === switchdata.player1 ||dataplayer.id === switchdata.player2) {
-                        console.log(switchdata)
-
                         if (dataplayer.id !== switchdata.userid) {
                             const createimg = document.createElement("img");
+
+                            getindexclick.current = switchdata.clicktable;
 
                             createimg.src = switchdata.symbol;
                             createimg.style.width = "120px";
@@ -109,6 +110,9 @@ export default function Gameroom() {
 
     const click = (element:any,index:number) => {
         if (isplay) {
+            if (getindexclick.current.includes(index)) return; 
+            getindexclick.current.push(index);
+            
             const createimg = document.createElement("img");
 
             createimg.src = symbol.current;
@@ -118,7 +122,7 @@ export default function Gameroom() {
 
             setisplay(false);
 
-            socket.emit("switchplayer",{userid:dataplayer?.id,player1:playerref.current.player1.userid,player2:playerref.current.player2.userid,index:index,symbol:symbol.current,canclick:true});
+            socket.emit("switchplayer",{userid:dataplayer?.id,player1:playerref.current.player1.userid,player2:playerref.current.player2.userid,index:index,symbol:symbol.current,canclick:true,clicktable:getindexclick.current});
         }
     }
 
