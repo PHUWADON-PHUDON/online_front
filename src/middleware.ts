@@ -2,22 +2,10 @@ import { NextResponse,NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
 export async function middleware(req:NextRequest) {
-    const token = req.cookies.get('token')?.value;
+    //const token = req.cookies.get('token')?.value;
 
     try{
-        if (!token) {
-            return NextResponse.redirect(new URL("/", req.url));
-        }
-
-        console.log(1)
-        const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-        console.log(2)
-        const  {payload}:any = await jwtVerify(token,secret);
-        console.log(3)
-
-        console.log(payload);
-
-        return NextResponse.next();
+        
 
         // if (payload) {
         //     return NextResponse.next();
@@ -31,4 +19,4 @@ export async function middleware(req:NextRequest) {
     }
 }
 
-export const config = { matcher: ["/game","/gameroom"] }
+export const config = { matcher: ["/gamea","/gamerooma"] }
