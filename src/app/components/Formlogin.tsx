@@ -83,8 +83,11 @@ export default function Formlogin({isclickregister,setisclickregister}:Typeclick
 			}
 
 			setiswait(true);
+			console.log("test1");
 			const res = await axios.post(url + "/user/login",{email:inputemail,password:inputpassword},{signal:abortcontrollerref.current.signal,withCredentials:true});
+			console.log("test2");
 			if (res.status === 201) {
+				console.log("test3");
 				setinputemail("");
 				setinputpassword("");
 				window.location.href = "/game";

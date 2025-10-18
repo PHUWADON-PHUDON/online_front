@@ -17,6 +17,8 @@ export default function Gameroom() {
     const [wait,setwait] = useState<boolean>(true);
     const [isfoundmatch,setisfoundmatch] = useState<boolean>(false);
     const [isplay,setisplay] = useState<boolean>(false);
+    const [player1isclick,setplayer1isclick] = useState<boolean>(true);
+    const [player2isclick,setplayer2isclick] = useState<boolean>(false);
     const playerref = useRef<any>(null);
     const symbol = useRef<string>("");
     const tableref = useRef<any>([]);
@@ -89,6 +91,8 @@ export default function Gameroom() {
 
                             tableref.current[switchdata.index].appendChild(createimg);
 
+                            setplayer1isclick(switchdata.player1isclick);
+                            setplayer2isclick(switchdata.player2isclick);
                             setisplay(switchdata.canclick);
                         }
                     }
@@ -120,9 +124,21 @@ export default function Gameroom() {
 
             element.appendChild(createimg);
 
+            setplayer1isclick(!player1isclick);
+            setplayer2isclick(!player2isclick);
             setisplay(false);
 
-            socket.emit("switchplayer",{userid:dataplayer?.id,player1:playerref.current.player1.userid,player2:playerref.current.player2.userid,index:index,symbol:symbol.current,canclick:true,clicktable:getindexclick.current});
+            socket.emit("switchplayer",{
+                userid:dataplayer?.id,
+                player1:playerref.current.player1.userid,
+                player2:playerref.current.player2.userid,
+                index:index,
+                symbol:symbol.current,
+                canclick:true,
+                clicktable:getindexclick.current,
+                player1isclick:!player1isclick,
+                player2isclick:!player2isclick
+            }); 
         }
     }
 
@@ -132,7 +148,11 @@ export default function Gameroom() {
         <div className="h-full flex justify-center items-center">
             {isfoundmatch ? 
                 <div>
-                    <p className="text-center">{playerref.current.player1.username} VS {playerref.current.player2.username}</p>
+                    <div className="grid grid-cols-3 text-center mb-[10px] font-bold">
+                        <p className={player1isclick ? "text-[#6bf46b]":""}>{playerref.current.player1.username}</p>
+                        <p>VS</p>
+                        <p className={player2isclick ? "text-[#6bf46b]":""}>{playerref.current.player2.username}</p>
+                    </div>
                     <div className="border border-white grid grid-cols-3 grid-rows-3">
                         {table.map((e,i) => (
                             <div key={i} onClick={(e) => click(e.target,i)} ref={(e:any) => tableref.current[i] = e} className="border border-white w-[150px] h-[150px] flex justify-center items-center"></div>
