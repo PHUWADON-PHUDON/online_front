@@ -1,23 +1,30 @@
 import { NextResponse,NextRequest } from "next/server";
-import axios from "axios";
+import { jwtVerify } from "jose";
 
 export async function middleware(req:NextRequest) {
-    const url = process.env.NEXT_PUBLIC_BACKEND_URL;
     const token = req.cookies.get('token')?.value;
 
     try{
-        //const res = await axios.get(url + "/user/verifyuser",{withCredentials:true,headers: {Authorization:token}});
-        const res = await fetch(url + "/user/verifyuser", {
-            headers: { "Authorization": `Bearer ${token}` },
-            credentials: "include" // browser จะส่ง cookie ไป
-        });
-
-        if (!res.ok) return NextResponse.redirect(new URL("/",req.url));
-
-        const resdata = await res.json();
-        if (resdata) {
-            return NextResponse.next();
+        if (!token) {
+            return NextResponse.redirect(new URL("/", req.url));
         }
+
+        console.log(1)
+        const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+        console.log(2)
+        const  {payload}:any = await jwtVerify(token,secret);
+        console.log(3)
+
+        console.log(payload);
+
+        return NextResponse.next();
+
+        // if (payload) {
+        //     return NextResponse.next();
+        // }
+        // else {
+        //     return NextResponse.redirect(new URL("/",req.url));
+        // }
     }
     catch(err) {
         return NextResponse.redirect(new URL("/",req.url));
