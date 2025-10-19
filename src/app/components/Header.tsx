@@ -23,8 +23,13 @@ export default function Header() {
                 setwait(true);
                 const res = await axios.get(url + "/user/verifyuser",{withCredentials:true});
                 if (res.status === 200) {
-                    setdataplayer(res.data);
-                    setwait(false);
+                    if (res.data.status) {
+                        setdataplayer(res.data.data);
+                        setwait(false);
+                    }
+                    else {
+                        window.location.href = "/";
+                    }
                 }
             }
             catch(err) {

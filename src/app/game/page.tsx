@@ -28,7 +28,7 @@ export default function Game() {
                 setwait(true);
                 const res = await axios.get(url + "/user/verifyuser",{withCredentials:true});
                 if (res.status === 200) {
-                    setdataplayer(res.data);
+                    setdataplayer(res.data.data);
                     setwait(false);
                 }
             }

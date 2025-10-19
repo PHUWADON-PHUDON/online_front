@@ -2,15 +2,35 @@ import { NextResponse,NextRequest } from "next/server";
 import axios from "axios";
 
 export async function middleware(req:NextRequest) {
-    const url = process.env.NEXT_PUBLIC_BACKEND_URL;
-    const token = req.cookies.get('token')?.value;
+     const url = process.env.NEXT_PUBLIC_BACKEND_URL;
+    // const token = req.cookies.get('token')?.value;
+
+    // try{
+    //     const res = await axios.get(url + "/user/verifyuser",{withCredentials:true,headers: {
+    //       Authorization:token
+    //     }});
+    //     if (res.status === 200) {
+    //         return NextResponse.next();
+    //     }
+    // }
+    // catch(err) {
+    //     return NextResponse.redirect(new URL("/",req.url));
+    // }
 
     try{
-        const res = await axios.get(url + "/user/verifyuser",{withCredentials:true,headers: {
-          Authorization:token
-        }});
-        if (res.status === 200) {
+        const res = await fetch(`${url}/user/verifyuser`, {
+            method: "GET",
+            headers: {
+              Cookie: req.headers.get("cookie") || "",
+            },
+            credentials: "include",
+        });
+
+        if (res.ok) {
             return NextResponse.next();
+        }
+        else {
+            return NextResponse.redirect(new URL("/",req.url));
         }
     }
     catch(err) {
