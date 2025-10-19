@@ -3,14 +3,14 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
 
-  // async rewrites() {
-  //   return [
-  //     {
-  //       source: '/((?!api).*)',
-  //       destination: `${process.env.NEXT_PUBLIC_BACKEND_URL}/:path*`,
-  //     },
-  //   ];
-  // },
+  async rewrites() {
+    return [
+      {
+        source: '/user/:path*',
+        destination: `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/:path*`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

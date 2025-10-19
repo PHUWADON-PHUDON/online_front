@@ -27,6 +27,8 @@ export async function middleware(req:NextRequest) {
         });
         const resdata = await res.json();
 
+        console.log("this is middleware ",resdata);
+
         if (res.ok) {
             return NextResponse.next();
         }
