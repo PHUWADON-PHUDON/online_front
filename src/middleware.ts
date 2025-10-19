@@ -25,9 +25,15 @@ export async function middleware(req:NextRequest) {
             },
             credentials: "include",
         });
+        const resdata = await res.json();
 
         if (res.ok) {
-            return NextResponse.next();
+            if (resdata.status) {
+                return NextResponse.next();
+            }
+            else {
+                return NextResponse.redirect(new URL("/",req.url));
+            }
         }
         else {
             return NextResponse.redirect(new URL("/",req.url));
