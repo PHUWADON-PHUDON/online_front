@@ -18,7 +18,6 @@ export async function middleware(req:NextRequest) {
     // }
 
     try{
-        console.log("mid ",url);
         const res = await fetch(`${url}/user/verifyuser`, {
             method: "GET",
             headers: {
@@ -28,7 +27,7 @@ export async function middleware(req:NextRequest) {
         });
         const resdata = await res.json();
 
-        console.log("this is middleware ",resdata);
+        console.log("this is middleware ",resdata," url ",url);
 
         if (res.ok) {
             return NextResponse.next();
