@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/user/:path*',
-        destination: `${process.env.NEXT_PUBLIC_BACKEND_URL}/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/:path*`,
       },
     ];
   },
