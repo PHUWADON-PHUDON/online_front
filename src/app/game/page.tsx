@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 import axios from "axios";
 import Header from "../components/Header";
 import Preload from "../components/Preload";
-const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL,{withCredentials: true});
+const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL,{withCredentials:true});
 
 interface Typedatauser {
     id:number;
@@ -28,7 +28,6 @@ export default function Game() {
                 setwait(true);
                 const res = await axios.get(url + "/user/verifyuser",{withCredentials:true});
                 if (res.status === 200) {
-                    console.log(res.data);
                     setdataplayer(res.data);
                     setwait(false);
                 }

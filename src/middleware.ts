@@ -1,22 +1,21 @@
 import { NextResponse,NextRequest } from "next/server";
-import { jwtVerify } from "jose";
+import axios from "axios";
 
 export async function middleware(req:NextRequest) {
-    //const token = req.cookies.get('token')?.value;
+    const url = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const token = req.cookies.get('token')?.value;
 
     try{
-        
-
-        // if (payload) {
-        //     return NextResponse.next();
-        // }
-        // else {
-        //     return NextResponse.redirect(new URL("/",req.url));
-        // }
+        const res = await axios.get(url + "/user/verifyuser",{withCredentials:true,headers: {
+          Authorization:token
+        }});
+        if (res.status === 200) {
+            return NextResponse.next();
+        }
     }
     catch(err) {
         return NextResponse.redirect(new URL("/",req.url));
     }
 }
 
-export const config = { matcher: ["/gamea","/gamerooma"] }
+export const config = { matcher: ["/game","/gameroom"] }
