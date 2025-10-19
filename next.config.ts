@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: '/:path*',
+        source: '/((?!api/auth).*)',
         destination: `${process.env.NEXT_PUBLIC_BACKEND_URL}/:path*`,
       },
     ];
