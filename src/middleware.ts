@@ -28,12 +28,7 @@ export async function middleware(req:NextRequest) {
         const resdata = await res.json();
 
         if (res.ok) {
-            if (resdata.status) {
-                return NextResponse.next();
-            }
-            else {
-                return NextResponse.redirect(new URL("/",req.url));
-            }
+            return NextResponse.next();
         }
         else {
             return NextResponse.redirect(new URL("/",req.url));
