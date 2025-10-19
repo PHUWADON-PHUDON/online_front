@@ -3,7 +3,7 @@ import { useState,useEffect,useRef } from "react";
 import { io } from "socket.io-client";
 import axios from "axios";
 import Preload from "../components/Preload";
-const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL);
+const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL,{withCredentials: true});
 
 interface Typedatauser {
     id:number;
