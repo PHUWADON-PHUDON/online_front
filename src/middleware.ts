@@ -32,7 +32,12 @@ export async function middleware(req:NextRequest) {
         console.log("this is middleware ",resdata," url ",url);
 
         if (res.ok) {
-            return NextResponse.next();
+            if (resdata.status) {
+                return NextResponse.next();
+            }
+            else {
+                return NextResponse.redirect(new URL("/",req.url));
+            }
         }
         else {
             return NextResponse.redirect(new URL("/",req.url));
